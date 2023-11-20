@@ -9,6 +9,18 @@ beforeEach(() => {
   return seed(data);
 });
 
+describe('/api', () => {
+  test('GET 200: responds with an object describing all the available endpoints on the API', () => {
+    return request(app)
+      .get('/api')
+      .expect(200)
+      .then(({ body }) => {
+        const { endpoints } = body;
+        expect(endpoints).toMatchObject(endpointsObject);
+      });
+  });
+});
+
 describe('/api/topics', () => {
   test('GET 200: sends an array of topics to the client ', () => {
     return request(app)
@@ -60,18 +72,6 @@ describe('/api/articles/:article_id', () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe('Bad request!');
-      });
-  });
-});
-
-describe('/api', () => {
-  test('GET 200: responds with an object describing all the available endpoints on the API', () => {
-    return request(app)
-      .get('/api')
-      .expect(200)
-      .then(({ body }) => {
-        const { endpoints } = body;
-        expect(endpoints).toMatchObject(endpointsObject);
       });
   });
 });

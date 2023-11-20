@@ -3,6 +3,7 @@ const express = require('express');
 // Controllers
 const { getTopics } = require('./Controllers/topics-controller');
 const { getArticleById } = require('./Controllers/articles-controller');
+const { getEndpoints } = require('./Controllers/api-controller');
 
 //Error Handlers
 const {
@@ -10,8 +11,6 @@ const {
   handlePsqError,
   handleCustomsError,
 } = require('./errors');
-const { handleServerErrors } = require('./errors');
-const { getEndpoints } = require('./Controllers/api-controller');
 
 const app = express();
 
