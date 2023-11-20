@@ -1,11 +1,11 @@
 const request = require('supertest');
 const app = require('../app');
 const seed = require('../db/seeds/seed');
-const index = require('../db/data/test-data/index');
+const data = require('../db/data/test-data/index');
 const db = require('../db/connection');
 
 beforeEach(() => {
-  return seed(index);
+  return seed(data);
 });
 
 describe('/api/topics', () => {
