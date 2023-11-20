@@ -4,7 +4,7 @@ const express = require('express');
 const { getTopics } = require('./Controllers/topics-controller');
 
 //Error Handlers
-const { handleServerErrors } = require('./erros');
+const { handleServerErrors } = require('./errors');
 
 const app = express();
 
