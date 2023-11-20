@@ -45,7 +45,7 @@ describe('/api/articles/:article_id', () => {
         });
       });
   });
-  test.only("GET 404: responds with an error the article doesn't exist", () => {
+  test("GET 404: responds with an error the article doesn't exist", () => {
     return request(app)
       .get('/api/articles/999')
       .expect(404)
@@ -53,7 +53,7 @@ describe('/api/articles/:article_id', () => {
         expect(body.msg).toBe('Not Found!');
       });
   });
-  test.only('GET 400: responds with an appropriate status and error message when provided with a bad article id', () => {
+  test('GET 400: responds with an appropriate status and error message when provided with a bad article id', () => {
     return request(app)
       .get('/api/articles/banana')
       .expect(400)
