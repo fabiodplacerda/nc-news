@@ -1,5 +1,6 @@
 exports.handlePsqError = (err, req, res, next) => {
-  if (err.code === '22P02') {
+  const errorCodes = ['22P02', '23502', '23503'];
+  if (errorCodes.includes(err.code)) {
     res.status(400).send({ msg: 'Bad request!' });
   } else {
     next(err);

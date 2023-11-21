@@ -178,4 +178,73 @@ describe('/api/articles/:article_id/comments', () => {
         expect(body.msg).toBe('Article not found!');
       });
   });
+
+  //POST
+  test('POST 201: inserts a comment to the db and sends the new comment back to the client', () => {
+    const newComment = {
+      username: 'lurker',
+      body: 'I have nothing to say',
+    };
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment.comment_id).toBe(19);
+        expect(comment.author).toBe('lurker');
+        expect(comment.body).toBe('I have nothing to say');
+      });
+  });
+  test('POST 400: responds with an appropriate status and error message when posting without a body property', () => {
+    const newComment = {
+      username: 'lurker',
+    };
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+  test('POST 400: responds with an appropriate status and error message when posting with a non-existing user', () => {
+    const newComment = {
+      username: 'NewUser5050',
+      body: 'I have nothing to say',
+    };
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+  test('POST 400: responds with an appropriate status and error message when posting with in non-existing article', () => {
+    const newComment = {
+      username: 'NewUser5050',
+      body: 'I have nothing to say',
+    };
+    return request(app)
+      .post('/api/articles/999/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+  test('POST 400: responds with an appropriate status and error message when posting with a bad article_id', () => {
+    const newComment = {
+      username: 'NewUser5050',
+      body: 'I have nothing to say',
+    };
+    return request(app)
+      .post('/api/articles/banana/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
 });
