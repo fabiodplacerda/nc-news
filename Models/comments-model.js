@@ -23,7 +23,6 @@ exports.insertCommentByArticleId = (id, comment) => {
     RETURNING *;`;
 
   return db.query(queryString, [username, body, id]).then(({ rows }) => {
-    console.log(rows);
     return rows[0];
   });
 };
