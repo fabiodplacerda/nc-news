@@ -2,10 +2,15 @@ const express = require('express');
 
 // Controllers
 const { getTopics } = require('./Controllers/topics-controller');
+const { getArticleById } = require('./Controllers/articles-controller');
+const { getEndpoints } = require('./Controllers/api-controller');
 
 //Error Handlers
-const { handleServerErrors } = require('./errors');
-const { getEndpoints } = require('./Controllers/api-controller');
+const {
+  handleServerErrors,
+  handlePsqError,
+  handleCustomsError,
+} = require('./errors');
 
 const app = express();
 
@@ -14,6 +19,10 @@ app.get('/api', getEndpoints);
 
 app.get('/api/topics', getTopics);
 
+app.get('/api/articles/:article_id', getArticleById);
+
+app.use(handlePsqError);
+app.use(handleCustomsError);
 app.use(handleServerErrors);
 
 module.exports = app;
