@@ -90,7 +90,7 @@ describe('/api/articles/:article_id', () => {
       .get('/api/articles/999')
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe('Not Found!');
+        expect(body.msg).toBe('Article not found!');
       });
   });
   test('GET 400: responds with an appropriate status and error message when provided with a bad article id', () => {
@@ -110,6 +110,7 @@ describe('/api/articles', () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
+        // console.log(articles);
         expect(articles).toHaveLength(13);
         expect(articles).toBeSortedBy('created_at', {
           descending: true,
@@ -150,6 +151,15 @@ describe('/api/articles/:article_id/comments', () => {
             article_id: expect.any(Number),
           });
         });
+      });
+  });
+  test('GET 200: responds with an array empty array if article_id exists but has no comments', () => {
+    return request(app)
+      .get('/api/articles/7/comments')
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toEqual([]);
       });
   });
   test('GET 400:  responds with an appropriate status and error message when provided with a bad article id', () => {
