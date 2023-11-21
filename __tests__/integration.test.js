@@ -74,12 +74,13 @@ describe('/api/articles/:article_id', () => {
         expect(body.msg).toBe('Bad request!');
       });
   });
-
+  //PATCH
   test('PATCH 200: should update the article and respond back with the updated article', () => {
     const votes = { inc_votes: -100 };
     return request(app)
       .patch('/api/articles/1')
       .send(votes)
+      .expect(200)
       .then(({ body }) => {
         const { article } = body;
         expect(article).toMatchObject({
@@ -93,6 +94,26 @@ describe('/api/articles/:article_id', () => {
           article_img_url:
             'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
         });
+      });
+  });
+  test('PATCH 400: responds with an appropriate status and error message when provided with a bad votes value', () => {
+    const votes = { inc_votes: 'banana' };
+    return request(app)
+      .patch('/api/articles/1')
+      .send(votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+  test("PATCH 404: responds with an error  when the article doesn't exist", () => {
+    const votes = { inc_votes: 200 };
+    return request(app)
+      .patch('/api/articles/999')
+      .send(votes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Article not found!');
       });
   });
 });
