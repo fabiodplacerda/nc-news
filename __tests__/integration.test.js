@@ -269,6 +269,9 @@ describe('/api/articles/:article_id/comments', () => {
         expect(body.msg).toBe('Bad request!');
       });
   });
+});
+
+describe('/api/comments/:comment_id', () => {
   test('DELETE 204: it should delete a comment accordingly with its id', () => {
     return request(app).delete('/api/comments/1').expect(204);
   });
@@ -278,6 +281,14 @@ describe('/api/articles/:article_id/comments', () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe('comment not found!');
+      });
+  });
+  test('DELETE 400: responds with an appropriate error message when given an invalid id', () => {
+    return request(app)
+      .delete('/api/comments/banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
       });
   });
 });
