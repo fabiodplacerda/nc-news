@@ -164,6 +164,16 @@ describe('/api/articles/:article_id', () => {
         expect(body.msg).toBe('Article not found!');
       });
   });
+  test('PATCH 400: responds with an error when trying to update a bad article_id', () => {
+    const votes = { inc_votes: 200 };
+    return request(app)
+      .patch('/api/articles/banana')
+      .send(votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
 });
 
 describe('/api/articles', () => {
