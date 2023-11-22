@@ -7,7 +7,10 @@ const {
   getArticles,
 } = require('./Controllers/articles-controller');
 const { getEndpoints } = require('./Controllers/api-controller');
-const { getCommentsByArticleId } = require('./Controllers/comments-controller');
+const {
+  getCommentsByArticleId,
+  postCommentByArticleId,
+} = require('./Controllers/comments-controller');
 
 //Error Handlers
 const {
@@ -17,7 +20,7 @@ const {
 } = require('./errors');
 
 const app = express();
-
+app.use(express.json());
 //Endpoints
 app.get('/api', getEndpoints);
 
@@ -28,6 +31,8 @@ app.get('/api/articles', getArticles);
 app.get('/api/articles/:article_id', getArticleById);
 
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
+
+app.post('/api/articles/:article_id/comments', postCommentByArticleId);
 
 app.use(handlePsqError);
 app.use(handleCustomsError);
