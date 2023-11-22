@@ -110,7 +110,6 @@ describe('/api/articles', () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        // console.log(articles);
         expect(articles).toHaveLength(13);
         expect(articles).toBeSortedBy('created_at', {
           descending: true,
@@ -191,6 +190,25 @@ describe('/api/articles/:article_id/comments', () => {
       .expect(201)
       .then(({ body }) => {
         const { comment } = body;
+        expect(comment.comment_id).toBe(19);
+        expect(comment.author).toBe('lurker');
+        expect(comment.body).toBe('I have nothing to say');
+      });
+  });
+  test('POST 201: when a comment is inserted with unnecessary properties they are ignored', () => {
+    const newComment = {
+      username: 'lurker',
+      body: 'I have nothing to say',
+      comment_id: 12,
+      likes: 24,
+    };
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        console.log(comment);
         expect(comment.comment_id).toBe(19);
         expect(comment.author).toBe('lurker');
         expect(comment.body).toBe('I have nothing to say');
