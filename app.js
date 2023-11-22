@@ -12,6 +12,7 @@ const {
   getCommentsByArticleId,
   postCommentByArticleId,
 } = require('./Controllers/comments-controller');
+const { getUsers } = require('./Controllers/users-controller');
 
 //Error Handlers
 const {
@@ -38,7 +39,7 @@ app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
 
 app.post('/api/articles/:article_id/comments', postCommentByArticleId);
 
-app.get('/api/users');
+app.get('/api/users', getUsers);
 
 app.use(handlePsqError);
 app.use(handleCustomsError);
