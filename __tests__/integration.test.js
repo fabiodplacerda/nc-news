@@ -208,9 +208,14 @@ describe('/api/articles/:article_id/comments', () => {
       .expect(201)
       .then(({ body }) => {
         const { comment } = body;
-        expect(comment.comment_id).toBe(19);
-        expect(comment.author).toBe('lurker');
-        expect(comment.body).toBe('I have nothing to say');
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          body: 'I have nothing to say',
+          article_id: 1,
+          author: 'lurker',
+          votes: 0,
+          created_at: expect.any(String),
+        });
       });
   });
   test('POST 400: responds with an appropriate status and error message when posting without a body property', () => {
