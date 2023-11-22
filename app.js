@@ -38,6 +38,8 @@ app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
 
 app.post('/api/articles/:article_id/comments', postCommentByArticleId);
 
+app.get('/api/users');
+
 app.use(handlePsqError);
 app.use(handleCustomsError);
 app.use(handleServerErrors);
