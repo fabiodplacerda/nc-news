@@ -28,3 +28,18 @@ exports.selectArticleById = id => {
       return rows[0];
     });
 };
+
+exports.updateArticleById = (id, votes) => {
+  const { inc_votes } = votes;
+  const queryString = `UPDATE articles
+                       SET votes = votes + $1
+                       WHERE article_id = $2
+                       RETURNING *;`;
+
+  return db.query(queryString, [inc_votes, id]).then(({ rows }) => {
+    if (!rows.length) {
+      return Promise.reject({ status: 404, msg: 'Article not found!' });
+    }
+    return rows[0];
+  });
+};

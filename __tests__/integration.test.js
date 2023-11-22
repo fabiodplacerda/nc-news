@@ -101,6 +101,79 @@ describe('/api/articles/:article_id', () => {
         expect(body.msg).toBe('Bad request!');
       });
   });
+  //PATCH
+  test('PATCH 200: should update the article and respond back with the updated article', () => {
+    const votes = { inc_votes: -100 };
+    return request(app)
+      .patch('/api/articles/1')
+      .send(votes)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: 'Living in the shadow of a great man',
+          topic: 'mitch',
+          author: 'butter_bridge',
+          body: 'I find this existence challenging',
+          created_at: '2020-07-09T20:11:00.000Z',
+          votes: 0,
+          article_img_url:
+            'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+        });
+      });
+  });
+  test('PATCH 200: when request body is inserted with unnecessary properties they are ignored', () => {
+    const votes = { inc_votes: -100, body: 'hello!', url: 'wwww.google.com' };
+    return request(app)
+      .patch('/api/articles/1')
+      .send(votes)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: 'Living in the shadow of a great man',
+          topic: 'mitch',
+          author: 'butter_bridge',
+          body: 'I find this existence challenging',
+          created_at: '2020-07-09T20:11:00.000Z',
+          votes: 0,
+          article_img_url:
+            'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+        });
+      });
+  });
+  test('PATCH 400: responds with an appropriate status and error message when provided with a bad votes value', () => {
+    const votes = { inc_votes: 'banana' };
+    return request(app)
+      .patch('/api/articles/1')
+      .send(votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+  test("PATCH 404: responds with an error  when the article doesn't exist", () => {
+    const votes = { inc_votes: 200 };
+    return request(app)
+      .patch('/api/articles/999')
+      .send(votes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Article not found!');
+      });
+  });
+  test('PATCH 400: responds with an error when trying to update a bad article_id', () => {
+    const votes = { inc_votes: 200 };
+    return request(app)
+      .patch('/api/articles/banana')
+      .send(votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
 });
 
 describe('/api/articles', () => {
