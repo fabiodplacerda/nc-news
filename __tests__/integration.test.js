@@ -208,7 +208,6 @@ describe('/api/articles/:article_id/comments', () => {
       .expect(201)
       .then(({ body }) => {
         const { comment } = body;
-        console.log(comment);
         expect(comment.comment_id).toBe(19);
         expect(comment.author).toBe('lurker');
         expect(comment.body).toBe('I have nothing to say');
