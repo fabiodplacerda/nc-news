@@ -121,6 +121,12 @@
       }
     }
   },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes a comment accordingly with the given id",
+    "exampleOfDelete": "DELETE /api/comments/1",
+    "expectedStatus": 204,
+    "exampleResponse": {}
+  },
   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": [],
