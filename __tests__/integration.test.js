@@ -269,4 +269,15 @@ describe('/api/articles/:article_id/comments', () => {
         expect(body.msg).toBe('Bad request!');
       });
   });
+  test('DELETE 204: it should delete a comment accordingly with its id', () => {
+    return request(app).delete('/api/comments/1').expect(204);
+  });
+  test("DELETE 404: responds with an appropriate error message when the id doesn't exist", () => {
+    return request(app)
+      .delete('/api/comments/999')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('comment not found!');
+      });
+  });
 });
