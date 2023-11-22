@@ -63,6 +63,38 @@ describe('/api/articles', () => {
         });
       });
   });
+  test('GET 200: sends an array of articles to the client from the queried topic', () => {
+    return request(app)
+      .get('/api/articles?topic=cats')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(1);
+        expect(articles).toBeSortedBy('created_at', {
+          descending: true,
+        });
+        articles.forEach(article => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: 'cats',
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  test('GET 400: responds with an error message when articles is queried with non-existing or invalid query', () => {
+    return request(app)
+      .get('/api/articles?topic=banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
 });
 
 describe('/api/articles/:article_id', () => {
