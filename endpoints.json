@@ -10,9 +10,18 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles sorted by date in descending order ",
+    "description": "serves an array of all articles sorted by date in descending order, there's also a possibility of sorting by specific columns, ordering in ascending or descending order",
     "queries": {
-      "validTopics": ["mitch", "cats", "paper"]
+      "validTopics": ["mitch", "cats", "paper"],
+      "validSortBy": [
+        "article_id",
+        "author",
+        "title",
+        "topic",
+        "created_at",
+        "votes"
+      ],
+      "valirOrderBy": ["ASC", "DESC"]
     },
     "exampleResponse": {
       "articles": [
