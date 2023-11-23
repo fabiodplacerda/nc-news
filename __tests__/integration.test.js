@@ -87,6 +87,16 @@ describe('/api/articles', () => {
         });
       });
   });
+  test('GET 200: when the topic has no associated articles sends back an empty array', () => {
+    return request(app)
+      .get('/api/articles?topic=paper')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(0);
+        expect(articles).toEqual([]);
+      });
+  });
   test('GET 400: responds with an error message when articles is queried with non-existing or invalid query', () => {
     return request(app)
       .get('/api/articles?topic=banana')
