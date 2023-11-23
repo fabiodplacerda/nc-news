@@ -12,12 +12,12 @@ exports.selectArticles = (topic, sort_by = 'created_at', order = 'DESC') => {
     'votes',
     ,
   ];
-  const valirOrder = ['ASC', 'DESC'];
+  const validOrder = ['ASC', 'DESC'];
 
   if (!validSortBy.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: 'Bad request!' });
   }
-  if (!valirOrder.includes(order)) {
+  if (!validOrder.includes(order)) {
     return Promise.reject({ status: 400, msg: 'Bad request!' });
   }
 
