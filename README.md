@@ -2,6 +2,8 @@
 
 Northcoders News API is a project with the intention of mimicking the building of a real-world backend service (such as Reddit), aiming to provide similar functionality and features.
 
+Hosted Version: https://nc-news-kx4n.onrender.com/api/
+
 ## Creating the databases
 
 You must create two .env files for your project: .env.test and .env.development.
