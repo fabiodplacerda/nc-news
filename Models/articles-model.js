@@ -10,7 +10,7 @@ exports.selectArticles = topic => {
   ON a.article_id = c.article_id `;
 
   const queryStringGroup = `
-  GROUP BY a.author, a.title, a.article_id, a.topic, a.created_at, a.votes, a.article_img_url 
+  GROUP BY  a.article_id
   ORDER BY created_at DESC;`;
 
   if (topic) {
