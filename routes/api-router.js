@@ -23,4 +23,6 @@ apiRouter.delete('/comments/:comment_id', commentsRouter);
 
 apiRouter.get('/users', usersRouter);
 
+apiRouter.get('/users/:username', usersRouter);
+
 module.exports = apiRouter;

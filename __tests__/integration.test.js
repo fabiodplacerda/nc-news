@@ -57,6 +57,23 @@ describe('GET /api/users', () => {
   });
 });
 
+describe('GET /api/users/:username', () => {
+  test('200: responds with an object containing one username', () => {
+    return request(app)
+      .get('/api/users/rogersop')
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user).toMatchObject({
+          username: 'rogersop',
+          name: 'paul',
+          avatar_url:
+            'https://avatars2.githubusercontent.com/u/24394918?s=400&v=4',
+        });
+      });
+  });
+});
+
 describe('GET /api/articles', () => {
   test('200: sends an array of articles to the client ', () => {
     return request(app)
