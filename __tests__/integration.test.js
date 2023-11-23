@@ -9,8 +9,8 @@ beforeEach(() => {
   return seed(data);
 });
 
-describe('/api', () => {
-  test('GET 200: responds with an object describing all the available endpoints on the API', () => {
+describe('GET /api', () => {
+  test('200: responds with an object describing all the available endpoints on the API', () => {
     return request(app)
       .get('/api')
       .expect(200)
@@ -21,8 +21,8 @@ describe('/api', () => {
   });
 });
 
-describe('/api/topics', () => {
-  test('GET 200: sends an array of topics to the client ', () => {
+describe('GET /api/topics', () => {
+  test('200: sends an array of topics to the client ', () => {
     return request(app)
       .get('/api/topics')
       .expect(200)
@@ -38,8 +38,27 @@ describe('/api/topics', () => {
   });
 });
 
-describe('/api/articles', () => {
-  test('GET 200: sends an array of articles to the client ', () => {
+describe('GET /api/users', () => {
+  test('200: sends an array of users to the client  ', () => {
+    return request(app)
+      .get('/api/users')
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toHaveLength(4);
+        users.forEach(user => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+});
+
+describe('GET /api/articles', () => {
+  test('200: sends an array of articles to the client ', () => {
     return request(app)
       .get('/api/articles')
       .expect(200)
@@ -63,7 +82,7 @@ describe('/api/articles', () => {
         });
       });
   });
-  test('GET 200: sends an array of articles to the client from the queried topic', () => {
+  test('200: sends an array of articles to the client from the queried topic', () => {
     return request(app)
       .get('/api/articles?topic=cats')
       .expect(200)
@@ -87,7 +106,7 @@ describe('/api/articles', () => {
         });
       });
   });
-  test('GET 200: when the topic has no associated articles sends back an empty array', () => {
+  test('200: when the topic has no associated articles sends back an empty array', () => {
     return request(app)
       .get('/api/articles?topic=paper')
       .expect(200)
@@ -97,7 +116,7 @@ describe('/api/articles', () => {
         expect(articles).toEqual([]);
       });
   });
-  test('GET 400: responds with an error message when articles is queried with non-existing or invalid query', () => {
+  test('400: responds with an error message when articles is queried with non-existing or invalid query', () => {
     return request(app)
       .get('/api/articles?topic=banana')
       .expect(400)
@@ -107,8 +126,8 @@ describe('/api/articles', () => {
   });
 });
 
-describe('/api/articles/:article_id', () => {
-  test('GET 200: sends a single article to the client ', () => {
+describe('GET /api/articles/:article_id', () => {
+  test('200: sends a single article to the client ', () => {
     return request(app)
       .get('/api/articles/1')
       .expect(200)
@@ -127,7 +146,7 @@ describe('/api/articles/:article_id', () => {
         });
       });
   });
-  test('GET 200: after update the endpoint should also send the article with the property comment_count', () => {
+  test('200: after update the endpoint should also send the article with the property comment_count', () => {
     return request(app)
       .get('/api/articles/1')
       .expect(200)
@@ -147,15 +166,7 @@ describe('/api/articles/:article_id', () => {
         });
       });
   });
-  test("GET 404: responds with an error the article doesn't exist", () => {
-    return request(app)
-      .get('/api/articles/999')
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe('Article not found!');
-      });
-  });
-  test('GET 400: responds with an appropriate status and error message when provided with a bad article id', () => {
+  test('400: responds with an appropriate status and error message when provided with a bad article id', () => {
     return request(app)
       .get('/api/articles/banana')
       .expect(400)
@@ -163,8 +174,18 @@ describe('/api/articles/:article_id', () => {
         expect(body.msg).toBe('Bad request!');
       });
   });
-  //PATCH
-  test('PATCH 200: should update the article and respond back with the updated article', () => {
+  test("404: responds with an error the article doesn't exist", () => {
+    return request(app)
+      .get('/api/articles/999')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Article not found!');
+      });
+  });
+});
+
+describe('PATCH /api/articles/:article_id', () => {
+  test('200: should update the article and respond back with the updated article', () => {
     const votes = { inc_votes: -100 };
     return request(app)
       .patch('/api/articles/1')
@@ -185,7 +206,7 @@ describe('/api/articles/:article_id', () => {
         });
       });
   });
-  test('PATCH 200: when request body is inserted with unnecessary properties they are ignored', () => {
+  test('200: when request body is inserted with unnecessary properties they are ignored', () => {
     const votes = { inc_votes: -100, body: 'hello!', url: 'wwww.google.com' };
     return request(app)
       .patch('/api/articles/1')
@@ -206,7 +227,7 @@ describe('/api/articles/:article_id', () => {
         });
       });
   });
-  test('PATCH 400: responds with an appropriate status and error message when provided with a bad votes value', () => {
+  test('400: responds with an appropriate status and error message when provided with a bad votes value', () => {
     const votes = { inc_votes: 'banana' };
     return request(app)
       .patch('/api/articles/1')
@@ -216,7 +237,7 @@ describe('/api/articles/:article_id', () => {
         expect(body.msg).toBe('Bad request!');
       });
   });
-  test("PATCH 404: responds with an error  when the article doesn't exist", () => {
+  test("404: responds with an error  when the article doesn't exist", () => {
     const votes = { inc_votes: 200 };
     return request(app)
       .patch('/api/articles/999')
@@ -226,7 +247,7 @@ describe('/api/articles/:article_id', () => {
         expect(body.msg).toBe('Article not found!');
       });
   });
-  test('PATCH 400: responds with an error when trying to update a bad article_id', () => {
+  test('400: responds with an error when trying to update a bad article_id', () => {
     const votes = { inc_votes: 200 };
     return request(app)
       .patch('/api/articles/banana')
@@ -238,35 +259,8 @@ describe('/api/articles/:article_id', () => {
   });
 });
 
-describe('/api/articles', () => {
-  test('GET 200: sends an array of articles to the client ', () => {
-    return request(app)
-      .get('/api/articles')
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body;
-        expect(articles).toHaveLength(13);
-        expect(articles).toBeSortedBy('created_at', {
-          descending: true,
-        });
-        articles.forEach(article => {
-          expect(article).toMatchObject({
-            author: expect.any(String),
-            title: expect.any(String),
-            article_id: expect.any(Number),
-            topic: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-            article_img_url: expect.any(String),
-            comment_count: expect.any(String),
-          });
-        });
-      });
-  });
-});
-
-describe('/api/articles/:article_id/comments', () => {
-  test('GET 200: responds with an array of comments for the given article_id', () => {
+describe('GET /api/articles/:article_id/comments', () => {
+  test('200: responds with an array of comments for the given article_id', () => {
     return request(app)
       .get('/api/articles/1/comments')
       .expect(200)
@@ -287,7 +281,7 @@ describe('/api/articles/:article_id/comments', () => {
         });
       });
   });
-  test('GET 200: responds with an array empty array if article_id exists but has no comments', () => {
+  test('200: responds with an array empty array if article_id exists but has no comments', () => {
     return request(app)
       .get('/api/articles/7/comments')
       .expect(200)
@@ -296,7 +290,7 @@ describe('/api/articles/:article_id/comments', () => {
         expect(comments).toEqual([]);
       });
   });
-  test('GET 400:  responds with an appropriate status and error message when provided with a bad article id', () => {
+  test('400: responds with an appropriate status and error message when provided with a bad article id', () => {
     return request(app)
       .get('/api/articles/banana/comments')
       .expect(400)
@@ -304,7 +298,7 @@ describe('/api/articles/:article_id/comments', () => {
         expect(body.msg).toBe('Bad request!');
       });
   });
-  test("GET 404: responds with an error the article doesn't exist", () => {
+  test("404: responds with an error the article doesn't exist", () => {
     return request(app)
       .get('/api/articles/999/comments')
       .expect(404)
@@ -312,9 +306,10 @@ describe('/api/articles/:article_id/comments', () => {
         expect(body.msg).toBe('Article not found!');
       });
   });
+});
 
-  //POST
-  test('POST 201: inserts a comment to the db and sends the new comment back to the client', () => {
+describe('POST /api/articles/:article_id/comments', () => {
+  test('201: inserts a comment to the db and sends the new comment back to the client', () => {
     const newComment = {
       username: 'lurker',
       body: 'I have nothing to say',
@@ -330,7 +325,7 @@ describe('/api/articles/:article_id/comments', () => {
         expect(comment.body).toBe('I have nothing to say');
       });
   });
-  test('POST 201: when a comment is inserted with unnecessary properties they are ignored', () => {
+  test('201: when a comment is inserted with unnecessary properties they are ignored', () => {
     const newComment = {
       username: 'lurker',
       body: 'I have nothing to say',
@@ -353,7 +348,7 @@ describe('/api/articles/:article_id/comments', () => {
         });
       });
   });
-  test('POST 400: responds with an appropriate status and error message when posting without a body property', () => {
+  test('400: responds with an appropriate status and error message when posting without a body property', () => {
     const newComment = {
       username: 'lurker',
     };
@@ -365,7 +360,7 @@ describe('/api/articles/:article_id/comments', () => {
         expect(body.msg).toBe('Bad request!');
       });
   });
-  test('POST 400: responds with an appropriate status and error message when posting with a non-existing user', () => {
+  test('400: responds with an appropriate status and error message when posting with a non-existing user', () => {
     const newComment = {
       username: 'NewUser5050',
       body: 'I have nothing to say',
@@ -378,7 +373,7 @@ describe('/api/articles/:article_id/comments', () => {
         expect(body.msg).toBe('Bad request!');
       });
   });
-  test('POST 400: responds with an appropriate status and error message when posting with in non-existing article', () => {
+  test('400: responds with an appropriate status and error message when posting with in non-existing article', () => {
     const newComment = {
       username: 'NewUser5050',
       body: 'I have nothing to say',
@@ -391,7 +386,7 @@ describe('/api/articles/:article_id/comments', () => {
         expect(body.msg).toBe('Bad request!');
       });
   });
-  test('POST 400: responds with an appropriate status and error message when posting with a bad article_id', () => {
+  test('400: responds with an appropriate status and error message when posting with a bad article_id', () => {
     const newComment = {
       username: 'NewUser5050',
       body: 'I have nothing to say',
@@ -406,19 +401,11 @@ describe('/api/articles/:article_id/comments', () => {
   });
 });
 
-describe('/api/comments/:comment_id', () => {
-  test('DELETE 204: it should delete a comment accordingly with its id', () => {
+describe('DELETE /api/comments/:comment_id', () => {
+  test('204: it should delete a comment accordingly with its id', () => {
     return request(app).delete('/api/comments/1').expect(204);
   });
-  test("DELETE 404: responds with an appropriate error message when the id doesn't exist", () => {
-    return request(app)
-      .delete('/api/comments/999')
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe('comment not found!');
-      });
-  });
-  test('DELETE 400: responds with an appropriate error message when given an invalid id', () => {
+  test('400: responds with an appropriate error message when given an invalid id', () => {
     return request(app)
       .delete('/api/comments/banana')
       .expect(400)
@@ -426,23 +413,12 @@ describe('/api/comments/:comment_id', () => {
         expect(body.msg).toBe('Bad request!');
       });
   });
-});
-
-describe('/api/users', () => {
-  test('GET 200: sends an array of users to the client  ', () => {
+  test("404: responds with an appropriate error message when the id doesn't exist", () => {
     return request(app)
-      .get('/api/users')
-      .expect(200)
+      .delete('/api/comments/999')
+      .expect(404)
       .then(({ body }) => {
-        const { users } = body;
-        expect(users).toHaveLength(4);
-        users.forEach(user => {
-          expect(user).toMatchObject({
-            username: expect.any(String),
-            name: expect.any(String),
-            avatar_url: expect.any(String),
-          });
-        });
+        expect(body.msg).toBe('comment not found!');
       });
   });
 });
