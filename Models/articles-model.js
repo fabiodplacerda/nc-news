@@ -1,7 +1,25 @@
 const db = require('../db/connection');
 
-exports.selectArticles = topic => {
+exports.selectArticles = (topic, sort_by = 'created_at', order = 'DESC') => {
   const validTopics = ['mitch', 'cats', 'paper'];
+
+  const validSortBy = [
+    'article_id',
+    'author',
+    'title',
+    'topic',
+    'created_at',
+    'votes',
+    ,
+  ];
+  const valirOrder = ['ASC', 'DESC'];
+
+  if (!validSortBy.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: 'Bad request!' });
+  }
+  if (!valirOrder.includes(order)) {
+    return Promise.reject({ status: 400, msg: 'Bad request!' });
+  }
 
   let queryString = `
   SELECT a.author, a.title, a.article_id, a.topic, a.created_at, a.votes, a.article_img_url, COUNT(c.article_id) AS comment_count
@@ -11,7 +29,7 @@ exports.selectArticles = topic => {
 
   const queryStringGroup = `
   GROUP BY  a.article_id
-  ORDER BY created_at DESC;`;
+  ORDER BY ${sort_by} ${order}`;
 
   if (topic) {
     if (!validTopics.includes(topic))

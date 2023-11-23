@@ -116,9 +116,43 @@ describe('GET /api/articles', () => {
         expect(articles).toEqual([]);
       });
   });
-  test('400: responds with an error message when articles is queried with non-existing or invalid query', () => {
+  test('200: The endpoint should also accept the following queries: sorty_by', () => {
+    return request(app)
+      .get('/api/articles?sort_by=votes')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy('votes', { descending: true });
+      });
+  });
+  test('200: The endpoint should also accept the following queries: sorty_by and order ', () => {
+    return request(app)
+      .get('/api/articles?sort_by=votes&order=ASC')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy('votes');
+      });
+  });
+  test('400: responds with an error message when articles are queried with non-existing or invalid query', () => {
     return request(app)
       .get('/api/articles?topic=banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+  test('400: responds with an error message when articles are sorted with non-existing or invalid query', () => {
+    return request(app)
+      .get('/api/articles?sort_by=banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+  test('400: responds with an error message when articles are ordered with an invalid query', () => {
+    return request(app)
+      .get('/api/articles?order=banana')
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe('Bad request!');
