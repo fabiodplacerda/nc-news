@@ -1,17 +1,31 @@
 const db = require('../db/connection');
 
-exports.selectArticles = () => {
-  return db
-    .query(
-      `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count
-      FROM articles
-      LEFT JOIN comments ON articles.article_id = comments.article_id
-      GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
-      ORDER BY created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+exports.selectArticles = topic => {
+  const validTopics = ['mitch', 'cats', 'paper'];
+
+  let queryString = `
+  SELECT a.author, a.title, a.article_id, a.topic, a.created_at, a.votes, a.article_img_url, COUNT(c.article_id) AS comment_count
+  FROM articles AS a
+  LEFT JOIN comments AS c
+  ON a.article_id = c.article_id `;
+
+  const queryStringGroup = `
+  GROUP BY a.author, a.title, a.article_id, a.topic, a.created_at, a.votes, a.article_img_url 
+  ORDER BY created_at DESC;`;
+
+  if (topic) {
+    if (!validTopics.includes(topic))
+      return Promise.reject({ status: 400, msg: 'Bad request!' });
+
+    queryString += `WHERE topic = '${topic}' `;
+    queryString += queryStringGroup;
+  } else {
+    queryString += queryStringGroup;
+  }
+
+  return db.query(queryString).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.selectArticleById = id => {

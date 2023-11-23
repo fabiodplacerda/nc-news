@@ -11,6 +11,9 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles sorted by date in descending order ",
+    "queries": {
+      "validTopics": ["mitch", "cats", "paper"]
+    },
     "exampleResponse": {
       "articles": [
         {
