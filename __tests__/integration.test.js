@@ -187,6 +187,94 @@ describe('GET /api/articles', () => {
   });
 });
 
+describe('POST /api/articles', () => {
+  test('201: inserts a article to the db and sends the new article back to the client', () => {
+    const newArticle = {
+      author: 'icellusedkars',
+      title: 'Hello World!',
+      body: 'Just testing',
+      topic: 'paper',
+      article_img_url:
+        'https://nbhc.ca/sites/default/files/styles/article/public/default_images/news-default-image%402x_0.png?itok=B4jML1jF',
+    };
+    return request(app)
+      .post('/api/articles')
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          author: 'icellusedkars',
+          title: 'Hello World!',
+          body: 'Just testing',
+          topic: 'paper',
+          article_id: 14,
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: '0',
+          article_img_url:
+            'https://nbhc.ca/sites/default/files/styles/article/public/default_images/news-default-image%402x_0.png?itok=B4jML1jF',
+        });
+      });
+  });
+  test('201: inserts a article to the db and sends the new article back to the client, if article url no present it should have a default value', () => {
+    const newArticle = {
+      author: 'icellusedkars',
+      title: 'Hello World!',
+      body: 'Just testing',
+      topic: 'paper',
+    };
+    return request(app)
+      .post('/api/articles')
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          author: 'icellusedkars',
+          title: 'Hello World!',
+          body: 'Just testing',
+          topic: 'paper',
+          article_id: 14,
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: '0',
+          article_img_url:
+            'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700',
+        });
+      });
+  });
+  test('400: responds with an appropriate status and error message when posting without any of the required properties', () => {
+    const newArticle = {
+      author: 'icellusedkars',
+      title: 'Hello World!',
+      body: 'Just testing',
+    };
+    return request(app)
+      .post('/api/articles')
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+  test('400: responds with an appropriate status and error message when posting when posting with a non-existing user', () => {
+    const newArticle = {
+      author: 'newUser5050',
+      title: 'Hello World!',
+      body: 'Just testing',
+      topic: 'paper',
+    };
+    return request(app)
+      .post('/api/articles')
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+});
+
 describe('GET /api/articles/:article_id', () => {
   test('200: sends a single article to the client ', () => {
     return request(app)

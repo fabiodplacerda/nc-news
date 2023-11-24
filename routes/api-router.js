@@ -9,19 +9,22 @@ apiRouter.get('/', endpointsRouter);
 
 apiRouter.get('/topics', topicsRouter);
 
-apiRouter.get('/articles', articlesRouter);
+apiRouter.route('/articles').get(articlesRouter).post(articlesRouter);
 
-apiRouter.get('/articles/:article_id', articlesRouter);
+apiRouter
+  .route('/articles/:article_id')
+  .get(articlesRouter)
+  .patch(articlesRouter);
 
-apiRouter.patch('/articles/:article_id', articlesRouter);
+apiRouter
+  .route('/articles/:article_id/comments')
+  .get(commentsRouter)
+  .post(commentsRouter);
 
-apiRouter.get('/articles/:article_id/comments', commentsRouter);
-
-apiRouter.post('/articles/:article_id/comments', commentsRouter);
-
-apiRouter.patch('/comments/:comment_id', commentsRouter);
-
-apiRouter.delete('/comments/:comment_id', commentsRouter);
+apiRouter
+  .route('/comments/:comment_id')
+  .patch(commentsRouter)
+  .delete(commentsRouter);
 
 apiRouter.get('/users', usersRouter);
 

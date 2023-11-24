@@ -2,6 +2,7 @@ const {
   selectArticleById,
   selectArticles,
   updateArticleById,
+  insertArticle,
 } = require('../Models/articles-model');
 
 exports.getArticles = (req, res, next) => {
@@ -29,6 +30,15 @@ exports.patchArticleById = (req, res, next) => {
   updateArticleById(article_id, votes)
     .then(article => {
       res.status(200).send({ article });
+    })
+    .catch(next);
+};
+
+exports.postArticle = (req, res, next) => {
+  const newArticle = req.body;
+  insertArticle(newArticle)
+    .then(article => {
+      res.status(201).send({ article });
     })
     .catch(next);
 };

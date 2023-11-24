@@ -4,9 +4,10 @@ const {
   getArticles,
   getArticleById,
   patchArticleById,
+  postArticle,
 } = require('../Controllers/articles-controller');
 
-articlesRouter.get('/articles', getArticles);
+articlesRouter.route('/articles').get(getArticles).post(postArticle);
 
 articlesRouter
   .route('/articles/:article_id')
