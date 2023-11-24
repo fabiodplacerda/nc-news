@@ -74,7 +74,7 @@ describe('GET /api/users/:username', () => {
         });
       });
   });
-  test.only('404: should respond with an error message when user is non-existing', () => {
+  test('404: should respond with an error message when user is non-existing', () => {
     return request(app)
       .get('/api/users/banana')
       .expect(404)
