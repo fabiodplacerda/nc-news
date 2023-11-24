@@ -4,6 +4,7 @@ const {
   getCommentsByArticleId,
   postCommentByArticleId,
   deleteCommentById,
+  patchCommentById,
 } = require('../Controllers/comments-controller');
 
 commentsRouter
@@ -11,6 +12,9 @@ commentsRouter
   .get(getCommentsByArticleId)
   .post(postCommentByArticleId);
 
-commentsRouter.delete('/comments/:comment_id', deleteCommentById);
+commentsRouter
+  .route('/comments/:comment_id')
+  .patch(patchCommentById)
+  .delete(deleteCommentById);
 
 module.exports = commentsRouter;

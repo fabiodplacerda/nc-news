@@ -462,6 +462,73 @@ describe('POST /api/articles/:article_id/comments', () => {
   });
 });
 
+describe('PATCH /api/comments/:comment_id', () => {
+  test("200: update the votes on a comment given the comment's comment_id.", () => {
+    const newVotes = { inc_votes: 4 };
+    return request(app)
+      .patch('/api/comments/1')
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment.votes).toBe(20);
+      });
+  });
+  test('200: when request body is inserted with unnecessary properties they are ignored', () => {
+    const newVotes = {
+      inc_votes: 4,
+      author: 'newUser',
+      comment_id: 27,
+      body: 'hello?',
+    };
+    return request(app)
+      .patch('/api/comments/1')
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: 1,
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          article_id: 9,
+          author: 'butter_bridge',
+          votes: 20,
+          created_at: '2020-04-06T12:17:00.000Z',
+        });
+      });
+  });
+  test('404: sends an error message when trying to updated a comment with a non existing comment_id', () => {
+    const newVotes = { inc_votes: 4 };
+    return request(app)
+      .patch('/api/comments/999')
+      .send(newVotes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('comment not found!');
+      });
+  });
+  test('400: sends an error message when trying to updated a comment with a invalid comment_id', () => {
+    const newVotes = { inc_votes: 4 };
+    return request(app)
+      .patch('/api/comments/banana')
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+  test('400: sends an error message when provided with a invalid votes value ', () => {
+    const newVotes = { inc_votes: 'banana' };
+    return request(app)
+      .patch('/api/comments/1')
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+});
+
 describe('DELETE /api/comments/:comment_id', () => {
   test('204: it should delete a comment accordingly with its id', () => {
     return request(app).delete('/api/comments/1').expect(204);

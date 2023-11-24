@@ -19,6 +19,8 @@ apiRouter.get('/articles/:article_id/comments', commentsRouter);
 
 apiRouter.post('/articles/:article_id/comments', commentsRouter);
 
+apiRouter.patch('/comments/:comment_id', commentsRouter);
+
 apiRouter.delete('/comments/:comment_id', commentsRouter);
 
 apiRouter.get('/users', usersRouter);
