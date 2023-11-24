@@ -9,6 +9,8 @@ beforeEach(() => {
   return seed(data);
 });
 
+afterAll(() => db.end());
+
 describe('GET /api', () => {
   test('200: responds with an object describing all the available endpoints on the API', () => {
     return request(app)
@@ -70,6 +72,14 @@ describe('GET /api/users/:username', () => {
           avatar_url:
             'https://avatars2.githubusercontent.com/u/24394918?s=400&v=4',
         });
+      });
+  });
+  test.only('404: should respond with an error message when user is non-existing', () => {
+    return request(app)
+      .get('/api/users/banana')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('User not found!');
       });
   });
 });

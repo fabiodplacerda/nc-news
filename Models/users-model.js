@@ -14,6 +14,9 @@ exports.selectUserByUsername = username => {
       [username]
     )
     .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({ status: 404, msg: 'User not found!' });
+      }
       return rows[0];
     });
 };
