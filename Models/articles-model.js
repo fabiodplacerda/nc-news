@@ -1,8 +1,13 @@
 const db = require('../db/connection');
 
-exports.selectArticles = (topic, sort_by = 'created_at', order = 'DESC') => {
+exports.selectArticles = (
+  topic,
+  sort_by = 'created_at',
+  order = 'DESC',
+  limit = 10,
+  p = 1
+) => {
   const validTopics = ['mitch', 'cats', 'paper'];
-
   const validSortBy = [
     'article_id',
     'author',
@@ -13,6 +18,7 @@ exports.selectArticles = (topic, sort_by = 'created_at', order = 'DESC') => {
     ,
   ];
   const validOrder = ['ASC', 'DESC'];
+  const offset = limit * p - limit;
 
   if (!validSortBy.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: 'Bad request!' });
@@ -29,7 +35,8 @@ exports.selectArticles = (topic, sort_by = 'created_at', order = 'DESC') => {
 
   const queryStringGroup = `
   GROUP BY  a.article_id
-  ORDER BY ${sort_by} ${order}`;
+  ORDER BY ${sort_by} ${order}
+  LIMIT $1 OFFSET $2`;
 
   if (topic) {
     if (!validTopics.includes(topic))
@@ -41,7 +48,7 @@ exports.selectArticles = (topic, sort_by = 'created_at', order = 'DESC') => {
     queryString += queryStringGroup;
   }
 
-  return db.query(queryString).then(({ rows }) => {
+  return db.query(queryString, [limit, offset]).then(({ rows }) => {
     return rows;
   });
 };

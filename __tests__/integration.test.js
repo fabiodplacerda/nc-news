@@ -91,7 +91,7 @@ describe('GET /api/articles', () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toHaveLength(13);
+        expect(articles).toHaveLength(10);
         expect(articles).toBeSortedBy('created_at', {
           descending: true,
         });
@@ -107,6 +107,64 @@ describe('GET /api/articles', () => {
             comment_count: expect.any(String),
           });
         });
+      });
+  });
+  test('200: (pagination) allows limit', () => {
+    return request(app)
+      .get('/api/articles?limit=5')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(5);
+        expect(articles).toBeSortedBy('created_at', {
+          descending: true,
+        });
+        articles.forEach(article => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  test('200: Allows p query which stands for page and specifies the page at which to start', () => {
+    return request(app)
+      .get('/api/articles?limit=2&p=2')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        // console.log(articles);
+        expect(articles).toHaveLength(2);
+        expect(articles).toEqual([
+          {
+            author: 'icellusedkars',
+            title: 'Sony Vaio; or, The Laptop',
+            article_id: 2,
+            topic: 'mitch',
+            created_at: '2020-10-16T05:03:00.000Z',
+            votes: 0,
+            article_img_url:
+              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+            comment_count: '0',
+          },
+          {
+            author: 'butter_bridge',
+            title: 'Another article about Mitch',
+            article_id: 13,
+            topic: 'mitch',
+            created_at: '2020-10-11T11:24:00.000Z',
+            votes: 0,
+            article_img_url:
+              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+            comment_count: '0',
+          },
+        ]);
       });
   });
   test('200: sends an array of articles to the client from the queried topic', () => {
