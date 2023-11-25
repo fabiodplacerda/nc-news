@@ -91,7 +91,7 @@ describe('GET /api/articles', () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toHaveLength(13);
+        expect(articles).toHaveLength(10);
         expect(articles).toBeSortedBy('created_at', {
           descending: true,
         });
@@ -107,6 +107,63 @@ describe('GET /api/articles', () => {
             comment_count: expect.any(String),
           });
         });
+      });
+  });
+  test('200: Pagination -  enables the use of a limit query, returning an array with a length equal to the specified limit.', () => {
+    return request(app)
+      .get('/api/articles?limit=5')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(5);
+        expect(articles).toBeSortedBy('created_at', {
+          descending: true,
+        });
+        articles.forEach(article => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  test('200: Pagination - enables the use of a p query which stands for page and specifies the page at which to start', () => {
+    return request(app)
+      .get('/api/articles?limit=2&p=4')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(2);
+        expect(articles).toEqual([
+          {
+            author: 'butter_bridge',
+            title: 'Living in the shadow of a great man',
+            article_id: 1,
+            topic: 'mitch',
+            created_at: '2020-07-09T20:11:00.000Z',
+            votes: 100,
+            article_img_url:
+              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+            comment_count: '11',
+          },
+          {
+            author: 'butter_bridge',
+            title: "They're not exactly dogs, are they?",
+            article_id: 9,
+            topic: 'mitch',
+            created_at: '2020-06-06T09:10:00.000Z',
+            votes: 0,
+            article_img_url:
+              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+            comment_count: '2',
+          },
+        ]);
       });
   });
   test('200: sends an array of articles to the client from the queried topic', () => {
@@ -159,6 +216,22 @@ describe('GET /api/articles', () => {
       .then(({ body }) => {
         const { articles } = body;
         expect(articles).toBeSortedBy('votes');
+      });
+  });
+  test('400: Pagination - responds with an error message when limit is an invalid value', () => {
+    return request(app)
+      .get('/api/articles?limit=banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+  test('400: Pagination - responds with an error message when p is an invalid value', () => {
+    return request(app)
+      .get('/api/articles?p=banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
       });
   });
   test('400: responds with an error message when articles are queried with non-existing or invalid query', () => {
