@@ -23,7 +23,7 @@ exports.selectArticles = (
   if (!validSortBy.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: 'Bad request!' });
   }
-  if (!validOrder.includes(order)) {
+  if (!validOrder.includes(order.toUpperCase())) {
     return Promise.reject({ status: 400, msg: 'Bad request!' });
   }
 
