@@ -109,63 +109,6 @@ describe('GET /api/articles', () => {
         });
       });
   });
-  test('200: Pagination -  enables the use of a limit query, returning an array with a length equal to the specified limit.', () => {
-    return request(app)
-      .get('/api/articles?limit=5')
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body;
-        expect(articles).toHaveLength(5);
-        expect(articles).toBeSortedBy('created_at', {
-          descending: true,
-        });
-        articles.forEach(article => {
-          expect(article).toMatchObject({
-            author: expect.any(String),
-            title: expect.any(String),
-            article_id: expect.any(Number),
-            topic: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-            article_img_url: expect.any(String),
-            comment_count: expect.any(String),
-          });
-        });
-      });
-  });
-  test('200: Pagination - enables the use of a p query which stands for page and specifies the page at which to start', () => {
-    return request(app)
-      .get('/api/articles?limit=2&p=4')
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body;
-        expect(articles).toHaveLength(2);
-        expect(articles).toEqual([
-          {
-            author: 'butter_bridge',
-            title: 'Living in the shadow of a great man',
-            article_id: 1,
-            topic: 'mitch',
-            created_at: '2020-07-09T20:11:00.000Z',
-            votes: 100,
-            article_img_url:
-              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-            comment_count: '11',
-          },
-          {
-            author: 'butter_bridge',
-            title: "They're not exactly dogs, are they?",
-            article_id: 9,
-            topic: 'mitch',
-            created_at: '2020-06-06T09:10:00.000Z',
-            votes: 0,
-            article_img_url:
-              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-            comment_count: '2',
-          },
-        ]);
-      });
-  });
   test('200: sends an array of articles to the client from the queried topic', () => {
     return request(app)
       .get('/api/articles?topic=cats')
@@ -218,22 +161,6 @@ describe('GET /api/articles', () => {
         expect(articles).toBeSortedBy('votes');
       });
   });
-  test('400: Pagination - responds with an error message when limit is an invalid value', () => {
-    return request(app)
-      .get('/api/articles?limit=banana')
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe('Bad request!');
-      });
-  });
-  test('400: Pagination - responds with an error message when p is an invalid value', () => {
-    return request(app)
-      .get('/api/articles?p=banana')
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe('Bad request!');
-      });
-  });
   test('400: responds with an error message when articles are queried with non-existing or invalid query', () => {
     return request(app)
       .get('/api/articles?topic=banana')
@@ -253,6 +180,82 @@ describe('GET /api/articles', () => {
   test('400: responds with an error message when articles are ordered with an invalid query', () => {
     return request(app)
       .get('/api/articles?order=banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+});
+
+describe('GET /api/articles?limit&p (pagination)', () => {
+  test('200: enables the use of a limit query, returning an array with a length equal to the specified limit.', () => {
+    return request(app)
+      .get('/api/articles?limit=5')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(5);
+        expect(articles).toBeSortedBy('created_at', {
+          descending: true,
+        });
+        articles.forEach(article => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  test('200: enables the use of a p query which stands for page and specifies the page at which to start', () => {
+    return request(app)
+      .get('/api/articles?limit=2&p=4')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(2);
+        expect(articles).toEqual([
+          {
+            author: 'butter_bridge',
+            title: 'Living in the shadow of a great man',
+            article_id: 1,
+            topic: 'mitch',
+            created_at: '2020-07-09T20:11:00.000Z',
+            votes: 100,
+            article_img_url:
+              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+            comment_count: '11',
+          },
+          {
+            author: 'butter_bridge',
+            title: "They're not exactly dogs, are they?",
+            article_id: 9,
+            topic: 'mitch',
+            created_at: '2020-06-06T09:10:00.000Z',
+            votes: 0,
+            article_img_url:
+              'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+            comment_count: '2',
+          },
+        ]);
+      });
+  });
+  test('400: responds with an error message when limit is an invalid value', () => {
+    return request(app)
+      .get('/api/articles?limit=banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+  test('400: responds with an error message when p is an invalid value', () => {
+    return request(app)
+      .get('/api/articles?p=banana')
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe('Bad request!');
@@ -488,7 +491,7 @@ describe('GET /api/articles/:article_id/comments', () => {
       .expect(200)
       .then(({ body }) => {
         const { comments } = body;
-        expect(comments).toHaveLength(11);
+        expect(comments).toHaveLength(10);
         expect(comments).toBeSortedBy('created_at');
         comments.forEach(comment => {
           expect(comment.article_id).toBe(1);
@@ -512,6 +515,30 @@ describe('GET /api/articles/:article_id/comments', () => {
         expect(comments).toEqual([]);
       });
   });
+  test('200: sends an array of articles to the client ', () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(10);
+        expect(articles).toBeSortedBy('created_at', {
+          descending: true,
+        });
+        articles.forEach(article => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
   test('400: responds with an appropriate status and error message when provided with a bad article id', () => {
     return request(app)
       .get('/api/articles/banana/comments')
@@ -526,6 +553,61 @@ describe('GET /api/articles/:article_id/comments', () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe('Article not found!');
+      });
+  });
+});
+
+describe('GET /api/articles/:article_id/comments?limit&p', () => {
+  test('200: enables the use of a limit query, returning an array with a length equal to the specified limit.', () => {
+    return request(app)
+      .get('/api/articles/1/comments?limit=5')
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toHaveLength(5);
+      });
+  });
+  test('200: enables the use of a p query which stands for page and specifies the page at which to start ', () => {
+    return request(app)
+      .get('/api/articles/1/comments?limit=2&p=3')
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toHaveLength(2);
+        expect(comments).toEqual([
+          {
+            comment_id: 6,
+            body: 'I hate streaming eyes even more',
+            article_id: 1,
+            author: 'icellusedkars',
+            votes: 0,
+            created_at: '2020-04-11T21:02:00.000Z',
+          },
+          {
+            comment_id: 8,
+            body: 'Delicious crackerbreads',
+            article_id: 1,
+            author: 'icellusedkars',
+            votes: 0,
+            created_at: '2020-04-14T20:19:00.000Z',
+          },
+        ]);
+      });
+  });
+  test('400: responds with an error message when limit has an invalid value', () => {
+    return request(app)
+      .get('/api/articles/1/comments?limit=banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
+      });
+  });
+  test('400: responds with an error message when p has an invalid value', () => {
+    return request(app)
+      .get('/api/articles/1/comments?p=banana')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request!');
       });
   });
 });
