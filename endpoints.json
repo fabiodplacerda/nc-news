@@ -48,7 +48,8 @@
         "created_at",
         "votes"
       ],
-      "valirOrderBy": ["ASC", "DESC"]
+      "valirOrderBy": ["ASC", "DESC"],
+      "validPaginationQueries": ["limit", "p"]
     },
     "exampleResponse": {
       "articles": [
