@@ -38,19 +38,23 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles sorted by date in descending order, there's also a possibility of sorting by specific columns, ordering in ascending or descending order",
-    "queries": {
-      "validTopics": ["mitch", "cats", "paper"],
-      "validSortBy": [
-        "article_id",
-        "author",
-        "title",
-        "topic",
-        "created_at",
-        "votes"
-      ],
-      "valirOrderBy": ["ASC", "DESC"],
-      "validPaginationQueries": ["limit", "p"]
-    },
+    "queries": [
+      { "topic": ["mitch", "cats", "paper"] },
+      {
+        "sort_by": [
+          "article_id",
+          "author",
+          "title",
+          "topic",
+          "created_at",
+          "votes"
+        ]
+      },
+      { "order": ["ASC", "DESC"] },
+      "limit",
+      "p"
+    ],
+
     "exampleResponse": {
       "articles": [
         {
@@ -117,6 +121,7 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "responds back with an array of comments by with the same article_id showing the most recent comments first",
+    "queries": ["limit", "p"],
     "exampleResponse": {
       "comments": [
         {
