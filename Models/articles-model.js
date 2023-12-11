@@ -7,7 +7,6 @@ exports.selectArticles = (
   limit = 10,
   p = 1
 ) => {
-  const validTopics = ['mitch', 'cats', 'paper'];
   const validSortBy = [
     'article_id',
     'author',
@@ -15,7 +14,6 @@ exports.selectArticles = (
     'topic',
     'created_at',
     'votes',
-    ,
   ];
   const validOrder = ['ASC', 'DESC'];
   const offset = limit * p - limit;
@@ -27,29 +25,35 @@ exports.selectArticles = (
     return Promise.reject({ status: 400, msg: 'Bad request!' });
   }
 
-  let queryString = `
-  SELECT a.author, a.title, a.article_id, a.topic, a.created_at, a.votes, a.article_img_url, COUNT(c.article_id) AS comment_count
-  FROM articles AS a
-  LEFT JOIN comments AS c
-  ON a.article_id = c.article_id `;
+  return db.query(`SELECT slug FROM topics`).then(({ rows }) => {
+    let queryString = `
+    SELECT a.author, a.title, a.article_id, a.topic, a.created_at, a.votes, a.article_img_url, COUNT(c.article_id) AS comment_count
+    FROM articles AS a
+    LEFT JOIN comments AS c
+    ON a.article_id = c.article_id `;
 
-  const queryStringGroup = `
-  GROUP BY  a.article_id
-  ORDER BY ${sort_by} ${order}
-  LIMIT $1 OFFSET $2`;
+    const queryStringGroup = `
+    GROUP BY  a.article_id
+    ORDER BY ${sort_by} ${order}
+    LIMIT $1 OFFSET $2`;
 
-  if (topic) {
-    if (!validTopics.includes(topic))
-      return Promise.reject({ status: 400, msg: 'Bad request!' });
-
-    queryString += `WHERE topic = '${topic}' `;
-    queryString += queryStringGroup;
-  } else {
-    queryString += queryStringGroup;
-  }
-
-  return db.query(queryString, [limit, offset]).then(({ rows }) => {
-    return rows;
+    if (topic) {
+      const validTopics = rows.some(topicObject => {
+        return topicObject.slug === topic;
+      });
+      if (!validTopics) {
+        return Promise.reject({ status: 400, msg: 'Bad request!' });
+      }
+      queryString += `WHERE topic = $3 `;
+      queryString += queryStringGroup;
+    } else {
+      queryString += queryStringGroup;
+    }
+    return db
+      .query(queryString, topic ? [limit, offset, topic] : [limit, offset])
+      .then(({ rows }) => {
+        return rows;
+      });
   });
 };
 
