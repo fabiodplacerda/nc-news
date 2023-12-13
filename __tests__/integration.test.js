@@ -91,7 +91,7 @@ describe('GET /api/articles', () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toHaveLength(10);
+        expect(articles).toHaveLength(13);
         expect(articles).toBeSortedBy('created_at', {
           descending: true,
         });
@@ -143,7 +143,7 @@ describe('GET /api/articles', () => {
         expect(articles).toEqual([]);
       });
   });
-  test('200: The endpoint should also accept the following queries: sorty_by', () => {
+  test('200: The endpoint should also accept the following queries: sort_by', () => {
     return request(app)
       .get('/api/articles?sort_by=votes')
       .expect(200)
@@ -152,7 +152,7 @@ describe('GET /api/articles', () => {
         expect(articles).toBeSortedBy('votes', { descending: true });
       });
   });
-  test('200: The endpoint should also accept the following queries: sorty_by and order ', () => {
+  test('200: The endpoint should also accept the following queries: sort_by and order ', () => {
     return request(app)
       .get('/api/articles?sort_by=votes&order=ASC')
       .expect(200)
@@ -521,7 +521,7 @@ describe('GET /api/articles/:article_id/comments', () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toHaveLength(10);
+        expect(articles).toHaveLength(13);
         expect(articles).toBeSortedBy('created_at', {
           descending: true,
         });

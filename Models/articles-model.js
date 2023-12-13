@@ -4,7 +4,7 @@ exports.selectArticles = (
   topic,
   sort_by = 'created_at',
   order = 'DESC',
-  limit = 10,
+  limit = 500,
   p = 1
 ) => {
   const validSortBy = [
